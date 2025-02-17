@@ -1,0 +1,17 @@
+{
+	"node": "n8n-nodes-base.tshark-trigger",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Cybersecurity", "Utility", "Core Nodes"],
+	"resources": {
+		"primaryDocumentation": [
+			{
+				"url": "https://www.zubial.net/"
+			}
+		]
+	},
+	"subcategories": {
+		"Core Nodes": ["Other Trigger Nodes"]
+	},
+	"alias": ["SecOps"]
+}
