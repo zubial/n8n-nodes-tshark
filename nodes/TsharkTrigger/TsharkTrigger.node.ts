@@ -115,11 +115,11 @@ export class TsharkTrigger implements INodeType {
 		let command: string = `tshark -help`;
 
 		if (operation === 'beacon') {
-			command = `tshark -i ${network_interface} -Y "wlan.fc.type_subtype == 8 && wlan.ssid != \\"\\"" -T fields -e wlan.fc.type_subtype -e wlan.sa -e wlan.ssid -e radiotap.channel.freq -e radiotap.dbm_antsignal -l`;
+			command = `tshark -i ${network_interface} -Y "wlan.fc.type_subtype == 8 && wlan.ssid != \\"\\"" -T fields -e wlan.fc.type_subtype -e wlan.sa -e wlan.sa_resolved -e wlan.ssid -e radiotap.channel.freq -e radiotap.dbm_antsignal -N m -l`;
 		} else if (operation === 'probe_response') {
-			command = `tshark -i ${network_interface} -Y "wlan.fc.type_subtype == 5 && wlan.ssid != \\"\\"" -T fields -e wlan.fc.type_subtype -e wlan.sa -e wlan.ssid -e radiotap.channel.freq -e radiotap.dbm_antsignal -l`;
+			command = `tshark -i ${network_interface} -Y "wlan.fc.type_subtype == 5 && wlan.ssid != \\"\\"" -T fields -e wlan.fc.type_subtype -e wlan.sa -e wlan.sa_resolved -e wlan.ssid -e radiotap.channel.freq -e radiotap.dbm_antsignal -N m -l`;
 		} else if (operation === 'probe_request') {
-			command = `tshark -i ${network_interface} -Y "wlan.fc.type_subtype == 4 && wlan.ssid != \\"\\"" -T fields -e wlan.fc.type_subtype -e wlan.sa -e wlan.ssid -e radiotap.channel.freq -e radiotap.dbm_antsignal -l`;
+			command = `tshark -i ${network_interface} -Y "wlan.fc.type_subtype == 4 && wlan.ssid != \\"\\"" -T fields -e wlan.fc.type_subtype -e wlan.sa -e wlan.sa_resolved -e wlan.ssid -e radiotap.channel.freq -e radiotap.dbm_antsignal -N m -l`;
 		}
 
 		const shellUtils = new ShellUtils();
@@ -143,6 +143,7 @@ export class TsharkTrigger implements INodeType {
 		let results: {
 			frameType: string;
 			macAddress: string;
+			macResolved: string;
 			ssid: string;
 			frequencyMHz: string;
 			signalDbm: string;
@@ -157,20 +158,21 @@ export class TsharkTrigger implements INodeType {
 				// Reject Duplicate Lines
 				if (line !== previous) {
 					const fields = line.split(/\s+/); // Split line
-					if (fields.length == 5) {
+					if (fields.length == 6) {
 						const frameType: string = fields[0];
 						const macAddress: string = fields[1];
-						const ssid: string = TsharkUtils.decodeSSID(fields[2]);
-						const frequencyMHz: string = fields[3];
-						const signalDbm: string = fields[4];
+						const macResolved: string = fields[2];
+						const ssid: string = TsharkUtils.decodeSSID(fields[3]);
+						const frequencyMHz: string = fields[4];
+						const signalDbm: string = fields[5];
 
 						limit_count++;
 						if (ssid.length > 0 && results.length < limit_emits) {
-							results.push({ frameType, macAddress, ssid, frequencyMHz, signalDbm });
+							results.push({ frameType, macAddress, macResolved, ssid, frequencyMHz, signalDbm });
 						} else {
 							const r = Math.floor(Math.random() * limit_count);
 							if (r < limit_emits) {
-								results[r] = { frameType, macAddress, ssid, frequencyMHz, signalDbm };
+								results[r] = { frameType, macAddress, macResolved, ssid, frequencyMHz, signalDbm };
 							}
 						}
 					}

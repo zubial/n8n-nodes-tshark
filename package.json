@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-tshark",
-  "version": "1.0.19",
+  "version": "1.0.22",
   "description": "Tshark node",
   "keywords": [
     "Tshark", "Scan", "SecOps", "Zubial", "n8n-community-node-package"
